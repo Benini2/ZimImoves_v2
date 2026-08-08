@@ -1,0 +1,218 @@
+:root {
+  --cor-primaria: #c4281c;
+  --cor-primaria-hover: #a82117;
+  --fundo: #f3f2ee;
+  --superficie: #ffffff;
+  --texto: #2c2c2a;
+  --texto-secundario: #6b6a66;
+  --borda: #e4e1d8;
+
+  --sidebar-fundo: #0f1626;
+  --sidebar-fundo-hover: #1a2338;
+  --sidebar-texto: #aab0c2;
+  --sidebar-texto-ativo: #ffffff;
+  --sidebar-borda: #1f2840;
+}
+
+html, body {
+  overflow-x: clip;
+  max-width: 100%;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+  background: var(--fundo);
+  color: var(--texto);
+}
+
+a { color: inherit; text-decoration: none; }
+
+button {
+  cursor: pointer;
+  font-family: inherit;
+}
+
+input, select, textarea {
+  font-family: inherit;
+  font-size: 14px;
+  padding: 8px 10px;
+  border: 1px solid var(--borda);
+  border-radius: 8px;
+  background: var(--superficie);
+}
+
+.btn-primario {
+  background: var(--cor-primaria);
+  color: #fff;
+  border: none;
+  padding: 10px 18px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+}
+.btn-primario:hover { background: var(--cor-primaria-hover); }
+
+.btn-secundario {
+  background: transparent;
+  border: 1px solid var(--borda);
+  padding: 10px 18px;
+  border-radius: 8px;
+  font-size: 14px;
+}
+
+.container {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+.erro {
+  color: var(--cor-primaria);
+  font-size: 13px;
+}
+
+.linha-clicavel { cursor: pointer; }
+.linha-clicavel:hover { background: var(--fundo); }
+
+.foto-clicavel {
+  cursor: pointer;
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+.foto-clicavel:hover {
+  transform: scale(1.02);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+}
+
+/* ===== Vitrine pública: visual "Zim Imóveis" ===== */
+
+.header-publico {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  width: 100%;
+  border-bottom: 1px solid var(--borda);
+  background: rgba(255,255,255,0.92);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.link-menu-publico {
+  padding: 8px 14px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--texto);
+  border-radius: 8px;
+  transition: color 0.15s ease;
+}
+.link-menu-publico:hover { color: var(--cor-primaria); }
+
+.card-imovel {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border-radius: 14px;
+  border: 1px solid var(--borda);
+  background: #fff;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.card-imovel:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 30px rgba(20,20,20,0.10);
+}
+.card-imovel-foto { position: relative; aspect-ratio: 4 / 3; overflow: hidden; background: var(--fundo); }
+.card-imovel-foto img,
+.card-imovel-foto .imagem-fundo {
+  width: 100%; height: 100%;
+  transition: transform 0.5s ease;
+}
+.card-imovel:hover .imagem-fundo { transform: scale(1.06); }
+
+.footer-publico { background: #1a1a18; color: rgba(255,255,255,0.75); }
+.footer-publico a:hover { color: var(--cor-primaria); }
+
+.badge-eyebrow {
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--cor-primaria);
+}
+
+@media (max-width: 700px) {
+  .menu-desktop-publico { display: none !important; }
+  .cta-desktop-publico { display: none !important; }
+}
+@media (min-width: 701px) {
+  .menu-mobile-publico { display: none !important; }
+}
+.grid-resumo { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+.grid-form { display: grid; grid-template-columns: 340px 1fr; gap: 20px; align-items: start; }
+.grid-duas-colunas { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.grid-localizacao { display: grid; grid-template-columns: 1fr 1fr 90px; gap: 10px; }
+.grid-caracteristicas { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; }
+.grid-comodidades { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.grid-fotos-detalhe { display: grid; grid-template-columns: 1.4fr 1fr; gap: 12px; }
+.grid-filtros { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+
+@media (max-width: 1024px) {
+  .grid-resumo { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 800px) {
+  .grid-form { grid-template-columns: 1fr; }
+  .grid-duas-colunas { grid-template-columns: 1fr; }
+  .grid-caracteristicas { grid-template-columns: repeat(3, 1fr); }
+  .grid-fotos-detalhe { grid-template-columns: 1fr; }
+  .grid-filtros { grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 560px) {
+  .grid-resumo { grid-template-columns: 1fr; }
+  .grid-2, .grid-localizacao { grid-template-columns: 1fr; }
+  .grid-caracteristicas { grid-template-columns: repeat(2, 1fr); }
+  .grid-comodidades { grid-template-columns: 1fr 1fr; }
+  .grid-filtros { grid-template-columns: 1fr; }
+}
+
+/* Tabelas: em vez de estourar a página, rolam só elas mesmas na horizontal */
+.tabela-scroll { width: 100%; overflow-x: auto; }
+
+/* ===== Sidebar do dashboard em celular/tablet ===== */
+.topo-mobile { display: none; }
+.somente-mobile { display: none; }
+
+@media (max-width: 880px) {
+  .topo-mobile {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 18px;
+    background: var(--sidebar-fundo);
+    position: sticky;
+    top: 0;
+    z-index: 30;
+  }
+  .sidebar-aside {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    z-index: 40;
+    transform: translateX(-100%);
+    transition: transform 0.22s ease;
+  }
+  .sidebar-aside.sidebar-aberta { transform: translateX(0); }
+  .sidebar-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.45);
+    z-index: 35;
+  }
+  .conteudo-principal { padding: 1.25rem 1rem !important; }
+  .somente-mobile { display: flex !important; }
+}
+
+.linha-clicavel { cursor: pointer; transition: background 0.12s ease; }
+.linha-clicavel:hover { background: var(--fundo); }
