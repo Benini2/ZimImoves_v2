@@ -25,8 +25,9 @@ export default function App() {
           <Route element={<PublicLayout />}>
             <Route path="/" element={<Home />} />
             <Route path="/catalogo" element={<Catalogo />} />
-            <Route path="/imovel/:id" element={<Detalhe />} />
             <Route path="/contatos" element={<Contato />} />
+            <Route path="/imovel/:id" element={<Detalhe />} />
+            
           </Route>
 
           {/* Login do dashboard, acessado em /login */}
