@@ -1,12 +1,15 @@
 import { useState } from 'react';
-import { Phone, Mail, MapPin, MessageCircle, Users } from 'lucide-react';
+import { Phone, Mail, MapPin, MessageCircle, Users, Instagram, Facebook } from 'lucide-react';
 
-// TODO: trocar pelos dados reais da imobiliária
+
 const CONTATO = {
   whatsapp: '554933534273',
   telefoneExibido: '(49) 3353-4273',
-  email: 'contato@suaimobiliaria.com',
+  email: 'zimimoveis@gmail.com',
   endereco: 'Rua Rio Grande, 1282 — Centro, Xaxim - SC',
+
+  instagram: 'https://www.instagram.com/zimimoveis/',
+  facebook: 'https://www.facebook.com/zimimoveis?locale=pt_BR',
 };
 
 export default function Contato() {
@@ -36,6 +39,28 @@ export default function Contato() {
             <ItemContato icone={Mail} label="E-mail" valor={CONTATO.email} />
             <ItemContato icone={MapPin} label="Endereço" valor={CONTATO.endereco} />
           </div>
+
+          <div style={{ display: 'flex', gap: 12, marginTop: 24 }}>
+            <a
+              href={CONTATO.instagram}
+              target="_blank"
+              rel="noreferrer"
+              title="Instagram"
+              style={{ width: 44, height: 44, borderRadius: '50%', background: '#FBEAE7', color: 'var(--cor-primaria)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+            >
+              <Instagram size={19} />
+            </a>
+            <a
+              href={CONTATO.facebook}
+              target="_blank"
+              rel="noreferrer"
+              title="Facebook"
+              style={{ width: 44, height: 44, borderRadius: '50%', background: '#FBEAE7', color: 'var(--cor-primaria)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+            >
+              <Facebook size={19} />
+            </a>
+          </div>
+
           <a
             href="https://linkme.bio/zimimoveis?utm_source=ig&utm_medium=social&utm_content=link_in_bio&fbclid=PAcGRvZgJleHRuA2FlbQIxMQBzcnRjBmFwcF9pZA85MzY2MTk3NDMzOTI0NTkAAacDj6qSpLwW7peqHPs3_lvznnw3-sA5l48YOvC4hcxiqoNBPez636os6CsOMA_aem_6xU9zVqQvQ1sPVMYpwURvw"
             target="_blank"
