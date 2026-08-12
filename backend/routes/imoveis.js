@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { pool } from '../db.js';
-import { autenticar } from '../middleware/auth.js';
+import { autenticar, permitir } from '../middleware/auth.js';
 
 const router = Router();
 
@@ -71,6 +71,16 @@ router.get('/publico', async (req, res) => {
     valores
   );
   res.json(rows.map(parseImovel));
+});
+
+// GET /api/imoveis/publico/cidades — cidades com pelo menos 1 imóvel postado, pro filtro do catálogo
+router.get('/publico/cidades', async (req, res) => {
+  const [rows] = await pool.query(
+    `SELECT DISTINCT cidade FROM imoveis
+     WHERE status = 'postado' AND cidade IS NOT NULL AND cidade <> ''
+     ORDER BY cidade ASC`
+  );
+  res.json(rows.map((r) => r.cidade));
 });
 
 // GET /api/imoveis/publico/:id — detalhe de um imóvel postado + fotos da galeria
@@ -161,7 +171,7 @@ router.get('/:id', async (req, res) => {
 });
 
 // POST /api/imoveis — cadastrar
-router.post('/', async (req, res) => {
+router.post('/', permitir('master', 'corretor'), async (req, res) => {
   const {
     nome, preco, tipo, status = 'nao_postado', cidade, estado, bairro,
     quartos, suites, vagas, areaTerreno, areaConstruida,
@@ -193,7 +203,7 @@ router.post('/', async (req, res) => {
 });
 
 // PUT /api/imoveis/:id — editar
-router.put('/:id', async (req, res) => {
+router.put('/:id', permitir('master', 'corretor'), async (req, res) => {
   const {
     nome, preco, tipo, status, cidade, estado, bairro,
     quartos, suites, vagas, areaTerreno, areaConstruida,
@@ -226,14 +236,14 @@ router.put('/:id', async (req, res) => {
 });
 
 // PATCH /api/imoveis/:id/destaque — liga/desliga o destaque direto na listagem
-router.patch('/:id/destaque', async (req, res) => {
+router.patch('/:id/destaque', permitir('master', 'corretor'), async (req, res) => {
   const { destaque } = req.body;
   await pool.query('UPDATE imoveis SET destaque=? WHERE id=?', [destaque ? 1 : 0, req.params.id]);
   res.json({ ok: true });
 });
 
 // PATCH /api/imoveis/:id/status — atalho para postar/despostar/marcar vendido
-router.patch('/:id/status', async (req, res) => {
+router.patch('/:id/status', permitir('master', 'corretor'), async (req, res) => {
   const { status } = req.body;
   if (!['postado', 'nao_postado', 'vendido'].includes(status)) {
     return res.status(400).json({ erro: 'Status inválido.' });
@@ -243,7 +253,7 @@ router.patch('/:id/status', async (req, res) => {
 });
 
 // DELETE /api/imoveis/:id
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', permitir('master', 'corretor'), async (req, res) => {
   const [result] = await pool.query('DELETE FROM imoveis WHERE id=?', [req.params.id]);
   if (result.affectedRows === 0) return res.status(404).json({ erro: 'Imóvel não encontrado.' });
   res.json({ ok: true });

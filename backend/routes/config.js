@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { pool } from '../db.js';
-import { autenticar } from '../middleware/auth.js';
+import { autenticar, permitir } from '../middleware/auth.js';
 
 const router = Router();
 
@@ -27,7 +27,7 @@ router.get('/', autenticar, async (req, res) => {
 });
 
 // PUT /api/config — salva uma ou mais chaves de uma vez: { hero_titulo, hero_subtitulo }
-router.put('/', autenticar, async (req, res) => {
+router.put('/', autenticar, permitir('master', 'corretor'), async (req, res) => {
   const entradas = Object.entries(req.body).filter(([chave]) => Object.keys(PADRAO).includes(chave));
   for (const [chave, valor] of entradas) {
     await pool.query(

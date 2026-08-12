@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { pool } from '../db.js';
-import { autenticar } from '../middleware/auth.js';
+import { autenticar, permitir } from '../middleware/auth.js';
 
 const router = Router();
 
@@ -21,7 +21,7 @@ router.get('/', async (req, res) => {
 });
 
 // POST /api/banners — cadastra um banner (máximo 3 ativos)
-router.post('/', async (req, res) => {
+router.post('/', permitir('master', 'corretor'), async (req, res) => {
   const { imagemUrl, linkUrl, ordem = 0 } = req.body;
   const [[{ ativos }]] = await pool.query('SELECT COUNT(*) ativos FROM banners WHERE ativo = 1');
 
@@ -37,7 +37,7 @@ router.post('/', async (req, res) => {
 });
 
 // PUT /api/banners/:id
-router.put('/:id', async (req, res) => {
+router.put('/:id', permitir('master', 'corretor'), async (req, res) => {
   const { imagemUrl, linkUrl, ordem, ativo } = req.body;
   await pool.query(
     'UPDATE banners SET imagem_url=?, link_url=?, ordem=?, ativo=? WHERE id=?',
@@ -47,7 +47,7 @@ router.put('/:id', async (req, res) => {
 });
 
 // DELETE /api/banners/:id
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', permitir('master', 'corretor'), async (req, res) => {
   await pool.query('DELETE FROM banners WHERE id=?', [req.params.id]);
   res.json({ ok: true });
 });

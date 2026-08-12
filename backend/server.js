@@ -11,6 +11,7 @@ import imoveisRoutes from './routes/imoveis.js';
 import bannersRoutes from './routes/banners.js';
 import uploadRoutes from './routes/upload.js';
 import configRoutes from './routes/config.js';
+import usuariosRoutes from './routes/usuarios.js';
 import { ehRoboDePreVia } from './middleware/crawler.js';
 import { paginaDePreViaDoImovel } from './routes/previa.js';
 
@@ -27,6 +28,7 @@ app.use('/api/imoveis', imoveisRoutes);
 app.use('/api/banners', bannersRoutes);
 app.use('/api/upload', uploadRoutes);
 app.use('/api/config', configRoutes);
+app.use('/api/usuarios', usuariosRoutes);
 
 app.get('/api/health', (req, res) => res.json({ ok: true }));
 

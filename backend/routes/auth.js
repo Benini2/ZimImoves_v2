@@ -16,7 +16,7 @@ router.post('/login', async (req, res) => {
 
   try {
     const [rows] = await pool.query(
-      'SELECT id, nome, email, senha_hash FROM usuarios WHERE email = ? LIMIT 1',
+      'SELECT id, nome, email, senha_hash, role FROM usuarios WHERE email = ? LIMIT 1',
       [email]
     );
 
@@ -31,14 +31,14 @@ router.post('/login', async (req, res) => {
     }
 
     const token = jwt.sign(
-      { id: usuario.id, nome: usuario.nome, email: usuario.email },
+      { id: usuario.id, nome: usuario.nome, email: usuario.email, role: usuario.role },
       process.env.JWT_SECRET,
       { expiresIn: process.env.JWT_EXPIRES_IN || '7d' }
     );
 
     res.json({
       token,
-      usuario: { id: usuario.id, nome: usuario.nome, email: usuario.email },
+      usuario: { id: usuario.id, nome: usuario.nome, email: usuario.email, role: usuario.role },
     });
   } catch (err) {
     console.error(err);

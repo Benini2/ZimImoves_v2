@@ -17,3 +17,14 @@ export function autenticar(req, res, next) {
     return res.status(401).json({ erro: 'Sessão expirada ou inválida. Faça login novamente.' });
   }
 }
+
+// Restringe uma rota a papéis específicos. Use depois de "autenticar".
+// Ex: router.post('/', autenticar, permitir('master', 'corretor'), async (req, res) => {...})
+export function permitir(...papeisPermitidos) {
+  return (req, res, next) => {
+    if (!papeisPermitidos.includes(req.usuario?.role)) {
+      return res.status(403).json({ erro: 'Você não tem permissão para fazer isso.' });
+    }
+    next();
+  };
+}
