@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import RotaPrivada from './components/RotaPrivada';
+import RotaComPapel from './components/RotaComPapel';
 
 import Login from './pages/Login';
 
@@ -15,6 +16,7 @@ import Imoveis from './pages/dashboard/Imoveis';
 import ImovelForm from './pages/dashboard/ImovelForm';
 import ImovelDetalhe from './pages/dashboard/ImovelDetalhe';
 import Banners from './pages/dashboard/Banners';
+import Usuarios from './pages/dashboard/Usuarios';
 
 export default function App() {
   return (
@@ -25,9 +27,8 @@ export default function App() {
           <Route element={<PublicLayout />}>
             <Route path="/" element={<Home />} />
             <Route path="/catalogo" element={<Catalogo />} />
-            <Route path="/contatos" element={<Contato />} />
             <Route path="/imovel/:id" element={<Detalhe />} />
-            
+            <Route path="/contatos" element={<Contato />} />
           </Route>
 
           {/* Login do dashboard, acessado em /login */}
@@ -43,10 +44,20 @@ export default function App() {
             }
           >
             <Route index element={<Imoveis />} />
-            <Route path="imoveis/novo" element={<ImovelForm />} />
-            <Route path="imoveis/:id" element={<ImovelForm />} />
+            <Route
+              path="imoveis/novo"
+              element={<RotaComPapel papeis={['master', 'corretor']}><ImovelForm /></RotaComPapel>}
+            />
+            <Route
+              path="imoveis/:id"
+              element={<RotaComPapel papeis={['master', 'corretor']}><ImovelForm /></RotaComPapel>}
+            />
             <Route path="imoveis/:id/detalhes" element={<ImovelDetalhe />} />
             <Route path="banners" element={<Banners />} />
+            <Route
+              path="usuarios"
+              element={<RotaComPapel papeis={['master']}><Usuarios /></RotaComPapel>}
+            />
           </Route>
         </Routes>
       </AuthProvider>

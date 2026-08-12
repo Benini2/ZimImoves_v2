@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { ArrowLeft, Star, Lock, ImageOff, X, ChevronLeft, ChevronRight } from 'lucide-react';
 import api, { ARQUIVOS_URL } from '../../api';
+import { useAuth } from '../../context/AuthContext';
 
 const TIPO_LABEL = {
   apartamento: 'Apartamento',
@@ -24,6 +25,7 @@ function urlCompleta(caminho) {
 export default function ImovelDetalhe() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { podeEditar } = useAuth();
   const [imovel, setImovel] = useState(null);
   const [indiceAberto, setIndiceAberto] = useState(null); // índice da foto aberta no lightbox
 
@@ -67,8 +69,12 @@ export default function ImovelDetalhe() {
           <span style={{ fontSize: 12, fontWeight: 500, padding: '5px 12px', borderRadius: 20, background: status.fundo, color: status.cor }}>
             {status.label}
           </span>
-          <Link to={`/dashboard/imoveis/${id}`} className="btn-secundario">Editar</Link>
-          <button onClick={excluir} className="btn-primario">Excluir</button>
+          {podeEditar && (
+            <>
+              <Link to={`/dashboard/imoveis/${id}`} className="btn-secundario">Editar</Link>
+              <button onClick={excluir} className="btn-primario">Excluir</button>
+            </>
+          )}
         </div>
       </div>
 

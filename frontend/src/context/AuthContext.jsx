@@ -23,7 +23,17 @@ export function AuthProvider({ children }) {
   }
 
   return (
-    <AuthContext.Provider value={{ usuario, entrar, sair, logado: !!usuario }}>
+    <AuthContext.Provider
+      value={{
+        usuario,
+        entrar,
+        sair,
+        logado: !!usuario,
+        // "corretor" e "master" podem cadastrar/editar/excluir; "visualizador" só vê as telas
+        podeEditar: usuario?.role === 'master' || usuario?.role === 'corretor',
+        ehMaster: usuario?.role === 'master',
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );

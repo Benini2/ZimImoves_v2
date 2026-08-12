@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Building2, Hourglass, CheckCircle2, Tag, ImageOff, Star, List, LayoutGrid } from 'lucide-react';
 import api, { ARQUIVOS_URL } from '../../api';
+import { useAuth } from '../../context/AuthContext';
 
 const TIPO_LABEL = {
   apartamento: 'Apartamento',
@@ -23,6 +24,7 @@ function urlCapa(foto) {
 
 export default function Imoveis() {
   const navigate = useNavigate();
+  const { podeEditar } = useAuth();
   const [imoveis, setImoveis] = useState([]);
   const [resumo, setResumo] = useState(null);
   const [cidades, setCidades] = useState([]);
@@ -79,7 +81,9 @@ export default function Imoveis() {
     <div>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
         <h1 style={{ fontSize: 20, fontWeight: 500, margin: 0 }}>Imóveis</h1>
-        <button onClick={() => navigate('/dashboard/imoveis/novo')} className="btn-primario">+ Cadastrar imóvel</button>
+        {podeEditar && (
+          <button onClick={() => navigate('/dashboard/imoveis/novo')} className="btn-primario">+ Cadastrar imóvel</button>
+        )}
       </div>
 
       {resumo && (
@@ -187,13 +191,19 @@ export default function Imoveis() {
                   >
                     <div style={{ position: 'relative', height: 140, background: capa ? `url(${capa}) center/cover` : 'var(--fundo)', display: capa ? 'block' : 'flex', alignItems: 'center', justifyContent: 'center' }}>
                       {!capa && <ImageOff size={22} color="var(--texto-secundario)" />}
-                      <button
-                        onClick={(e) => alternarDestaque(e, imovel)}
-                        title="Destaque"
-                        style={{ position: 'absolute', top: 8, left: 8, background: 'rgba(255,255,255,0.9)', border: 'none', borderRadius: '50%', width: 26, height: 26, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-                      >
-                        <Star size={14} fill={destacado ? 'var(--cor-primaria)' : 'none'} color={destacado ? 'var(--cor-primaria)' : '#8a8a86'} />
-                      </button>
+                      {podeEditar ? (
+                        <button
+                          onClick={(e) => alternarDestaque(e, imovel)}
+                          title="Destaque"
+                          style={{ position: 'absolute', top: 8, left: 8, background: 'rgba(255,255,255,0.9)', border: 'none', borderRadius: '50%', width: 26, height: 26, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                        >
+                          <Star size={14} fill={destacado ? 'var(--cor-primaria)' : 'none'} color={destacado ? 'var(--cor-primaria)' : '#8a8a86'} />
+                        </button>
+                      ) : destacado ? (
+                        <div style={{ position: 'absolute', top: 8, left: 8, background: 'rgba(255,255,255,0.9)', borderRadius: '50%', width: 26, height: 26, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                          <Star size={14} fill="var(--cor-primaria)" color="var(--cor-primaria)" />
+                        </div>
+                      ) : null}
                       <span style={{ position: 'absolute', top: 8, right: 8, fontSize: 11, fontWeight: 500, padding: '3px 9px', borderRadius: 20, background: status.fundo, color: status.cor }}>
                         {status.label}
                       </span>
@@ -206,16 +216,22 @@ export default function Imoveis() {
                       <p style={{ fontSize: 14, fontWeight: 600, margin: '0 0 8px' }}>
                         {Number(imovel.preco).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
                       </p>
-                      <select
-                        value={imovel.status}
-                        onChange={(e) => alternarStatus(e, imovel.id, e.target.value)}
-                        onClick={(e) => e.stopPropagation()}
-                        style={{ fontSize: 12, padding: '4px 6px', width: '100%' }}
-                      >
-                        <option value="nao_postado">Não postado</option>
-                        <option value="postado">Postado</option>
-                        <option value="vendido">Vendido</option>
-                      </select>
+                      {podeEditar ? (
+                        <select
+                          value={imovel.status}
+                          onChange={(e) => alternarStatus(e, imovel.id, e.target.value)}
+                          onClick={(e) => e.stopPropagation()}
+                          style={{ fontSize: 12, padding: '4px 6px', width: '100%' }}
+                        >
+                          <option value="nao_postado">Não postado</option>
+                          <option value="postado">Postado</option>
+                          <option value="vendido">Vendido</option>
+                        </select>
+                      ) : (
+                        <span style={{ fontSize: 12, fontWeight: 500, padding: '4px 10px', borderRadius: 20, background: status.fundo, color: status.cor, display: 'inline-block' }}>
+                          {status.label}
+                        </span>
+                      )}
                     </div>
                   </div>
                 );
@@ -264,16 +280,22 @@ export default function Imoveis() {
                               <ImageOff size={16} color="var(--texto-secundario)" />
                             </div>
                           )}
-                          <button
-                            onClick={(e) => alternarDestaque(e, imovel)}
-                            title="Destaque"
-                            style={{
-                              position: 'absolute', bottom: -5, right: -5, background: '#fff', border: '1px solid var(--borda)',
-                              borderRadius: '50%', width: 20, height: 20, display: 'flex', alignItems: 'center', justifyContent: 'center',
-                            }}
-                          >
-                            <Star size={11} fill={destacado ? 'var(--cor-primaria)' : 'none'} color={destacado ? 'var(--cor-primaria)' : '#8a8a86'} />
-                          </button>
+                          {podeEditar ? (
+                            <button
+                              onClick={(e) => alternarDestaque(e, imovel)}
+                              title="Destaque"
+                              style={{
+                                position: 'absolute', bottom: -5, right: -5, background: '#fff', border: '1px solid var(--borda)',
+                                borderRadius: '50%', width: 20, height: 20, display: 'flex', alignItems: 'center', justifyContent: 'center',
+                              }}
+                            >
+                              <Star size={11} fill={destacado ? 'var(--cor-primaria)' : 'none'} color={destacado ? 'var(--cor-primaria)' : '#8a8a86'} />
+                            </button>
+                          ) : destacado ? (
+                            <div style={{ position: 'absolute', bottom: -5, right: -5, background: '#fff', border: '1px solid var(--borda)', borderRadius: '50%', width: 20, height: 20, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                              <Star size={11} fill="var(--cor-primaria)" color="var(--cor-primaria)" />
+                            </div>
+                          ) : null}
                         </div>
                       </td>
                       <td style={{ padding: '12px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{TIPO_LABEL[imovel.tipo]}</td>
@@ -286,15 +308,21 @@ export default function Imoveis() {
                         {Number(imovel.preco).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
                       </td>
                       <td style={{ padding: '8px 20px' }} onClick={(e) => e.stopPropagation()}>
-                        <select
-                          value={imovel.status}
-                          onChange={(e) => alternarStatus(e, imovel.id, e.target.value)}
-                          style={{ fontSize: 12, padding: '4px 6px' }}
-                        >
-                          <option value="nao_postado">Não postado</option>
-                          <option value="postado">Postado</option>
-                          <option value="vendido">Vendido</option>
-                        </select>
+                        {podeEditar ? (
+                          <select
+                            value={imovel.status}
+                            onChange={(e) => alternarStatus(e, imovel.id, e.target.value)}
+                            style={{ fontSize: 12, padding: '4px 6px' }}
+                          >
+                            <option value="nao_postado">Não postado</option>
+                            <option value="postado">Postado</option>
+                            <option value="vendido">Vendido</option>
+                          </select>
+                        ) : (
+                          <span style={{ fontSize: 12, fontWeight: 500, padding: '4px 10px', borderRadius: 20, background: STATUS_INFO[imovel.status].fundo, color: STATUS_INFO[imovel.status].cor }}>
+                            {STATUS_INFO[imovel.status].label}
+                          </span>
+                        )}
                       </td>
                     </tr>
                   );

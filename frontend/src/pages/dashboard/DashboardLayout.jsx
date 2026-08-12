@@ -1,7 +1,9 @@
 import { useEffect, useState } from 'react';
 import { NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom';
-import { LayoutGrid, Images, LogOut, Menu, X } from 'lucide-react';
+import { LayoutGrid, Images, Users, LogOut, Menu, X } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
+
+const ROLE_LABEL = { master: 'master', corretor: 'corretor', visualizador: 'visualizador' };
 
 function ItemMenu({ to, icone: Icone, label, fim, aoClicar }) {
   return (
@@ -27,7 +29,7 @@ function ItemMenu({ to, icone: Icone, label, fim, aoClicar }) {
 }
 
 export default function DashboardLayout() {
-  const { usuario, sair } = useAuth();
+  const { usuario, sair, ehMaster } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const [menuAberto, setMenuAberto] = useState(false);
@@ -49,8 +51,8 @@ export default function DashboardLayout() {
         <button onClick={() => setMenuAberto(true)} style={{ background: 'transparent', border: 'none', color: '#fff', display: 'flex' }}>
           <Menu size={22} />
         </button>
-        <p style={{ fontWeight: 600, fontSize: 15, margin: 0, color: 'var(--cor-primaria)' }}>
-          Zim<span style={{ color: '#fff' }}> Imoveis</span>
+        <p style={{ fontWeight: 600, fontSize: 15, margin: 0, color: '#fff' }}>
+          Imobiliária<span style={{ color: 'var(--cor-primaria)' }}>.</span>
         </p>
         <div style={{ width: 22 }} />
       </div>
@@ -75,8 +77,8 @@ export default function DashboardLayout() {
         >
           <div style={{ marginBottom: 28, paddingLeft: 4, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
             <div>
-              <p style={{ fontWeight: 600, fontSize: 17, margin: 0, color: 'var(--cor-primaria)' }}>
-                Zim<span style={{ color: '#fff' }}> Imoveis</span>
+              <p style={{ fontWeight: 600, fontSize: 17, margin: 0, color: '#fff' }}>
+                Imobiliária<span style={{ color: 'var(--cor-primaria)' }}>.</span>
               </p>
               <p style={{ fontSize: 12, color: 'var(--sidebar-texto)', margin: '2px 0 0' }}>Painel administrativo</p>
             </div>
@@ -103,6 +105,17 @@ export default function DashboardLayout() {
             <ItemMenu to="/dashboard/banners" icone={Images} label="Banners" />
           </nav>
 
+          {ehMaster && (
+            <>
+              <p style={{ fontSize: 11, letterSpacing: '0.06em', color: '#5b6580', fontWeight: 600, margin: '20px 0 8px 12px' }}>
+                ADMINISTRAÇÃO
+              </p>
+              <nav style={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+                <ItemMenu to="/dashboard/usuarios" icone={Users} label="Usuários" />
+              </nav>
+            </>
+          )}
+
           <div style={{ marginTop: 'auto', borderTop: '1px solid var(--sidebar-borda)', paddingTop: 14, display: 'flex', alignItems: 'center', gap: 10 }}>
             <div
               style={{
@@ -117,7 +130,7 @@ export default function DashboardLayout() {
               <p style={{ fontSize: 13, color: '#fff', margin: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                 {usuario?.nome || usuario?.email}
               </p>
-              <p style={{ fontSize: 11, color: 'var(--sidebar-texto)', margin: 0 }}>admin</p>
+              <p style={{ fontSize: 11, color: 'var(--sidebar-texto)', margin: 0 }}>{ROLE_LABEL[usuario?.role] || ''}</p>
             </div>
             <button
               onClick={aoSair}

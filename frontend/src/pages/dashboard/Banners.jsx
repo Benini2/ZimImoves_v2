@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { Trash2, ImageOff, Upload, Type, Video } from 'lucide-react';
 import api, { ARQUIVOS_URL } from '../../api';
 import RecorteImagemModal from '../../components/RecorteImagemModal';
+import { useAuth } from '../../context/AuthContext';
 
 function urlCompleta(caminho) {
   if (!caminho) return null;
@@ -14,6 +15,7 @@ function ehVideo(url) {
 }
 
 export default function Banners() {
+  const { podeEditar } = useAuth();
   const inputRef = useRef(null);
   const [banners, setBanners] = useState([]);
   const [arquivoParaRecorte, setArquivoParaRecorte] = useState(null);
@@ -147,6 +149,7 @@ export default function Banners() {
         Até 3 banners ativos aparecem no carrossel da página inicial ({ativos}/3 ativos). Pode ser foto ou um vídeo curto (mudo, em loop).
       </p>
 
+      {podeEditar && (
       <div style={{ background: '#fff', border: '1px solid var(--borda)', borderRadius: 12, padding: '1.25rem', marginBottom: 24 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 10 }}>
           <Type size={15} color="var(--texto-secundario)" />
@@ -173,7 +176,9 @@ export default function Banners() {
           {textosSalvos && <span style={{ fontSize: 12, color: '#1f9d55' }}>Salvo!</span>}
         </div>
       </div>
+      )}
 
+      {podeEditar && (
       <div style={{ background: '#fff', border: '1px solid var(--borda)', borderRadius: 12, padding: '1.25rem', marginBottom: 24 }}>
         <p style={{ fontSize: 12, fontWeight: 500, color: 'var(--texto-secundario)', marginBottom: 10 }}>NOVO BANNER</p>
 
@@ -228,6 +233,7 @@ export default function Banners() {
           </p>
         )}
       </div>
+      )}
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
         {banners.map((banner) => {
@@ -255,10 +261,14 @@ export default function Banners() {
                   {banner.ativo ? 'Ativo' : 'Inativo'}
                 </span>
               </div>
-              <button className="btn-secundario" onClick={() => alternarAtivo(banner)}>{banner.ativo ? 'Desativar' : 'Ativar'}</button>
-              <button onClick={() => excluir(banner.id)} style={{ background: 'none', border: 'none', color: 'var(--cor-primaria)', display: 'flex', padding: 6 }} title="Excluir">
-                <Trash2 size={16} />
-              </button>
+              {podeEditar && (
+                <>
+                  <button className="btn-secundario" onClick={() => alternarAtivo(banner)}>{banner.ativo ? 'Desativar' : 'Ativar'}</button>
+                  <button onClick={() => excluir(banner.id)} style={{ background: 'none', border: 'none', color: 'var(--cor-primaria)', display: 'flex', padding: 6 }} title="Excluir">
+                    <Trash2 size={16} />
+                  </button>
+                </>
+              )}
             </div>
           );
         })}
