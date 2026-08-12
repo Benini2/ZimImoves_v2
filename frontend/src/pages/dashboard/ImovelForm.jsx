@@ -192,18 +192,54 @@ export default function ImovelForm() {
 
           <div style={{ background: '#fff', border: '1px solid var(--borda)', borderRadius: 12, padding: '1.25rem' }}>
             <p style={{ fontSize: 12, fontWeight: 500, color: 'var(--texto-secundario)', marginBottom: 10 }}>CARACTERÍSTICAS</p>
-            <select value={form.tipo} onChange={(e) => setCampo('tipo', e.target.value)} style={{ width: '100%', marginBottom: 10 }}>
+            <select
+              value={form.tipo}
+              onChange={(e) => {
+                const novoTipo = e.target.value;
+                setForm((f) => {
+                  const atualizado = { ...f, tipo: novoTipo };
+                  if (novoTipo === 'terreno') {
+                    // Terreno não tem quartos/suítes/vagas/área construída
+                    atualizado.quartos = '';
+                    atualizado.suites = '';
+                    atualizado.vagas = '';
+                    atualizado.areaConstruida = '';
+                  } else if (novoTipo === 'apartamento') {
+                    // Apartamento não tem área de terreno própria
+                    atualizado.areaTerreno = '';
+                  }
+                  return atualizado;
+                });
+              }}
+              style={{ width: '100%', marginBottom: 10 }}
+            >
               <option value="apartamento">Apartamento</option>
               <option value="casa">Casa</option>
               <option value="terreno">Terreno</option>
               <option value="sala_comercial">Sala comercial</option>
             </select>
             <div className="grid-caracteristicas">
-              <input placeholder="Quartos" type="number" value={form.quartos} onChange={(e) => setCampo('quartos', e.target.value)} />
-              <input placeholder="Suítes" type="number" value={form.suites} onChange={(e) => setCampo('suites', e.target.value)} />
-              <input placeholder="Vagas" type="number" value={form.vagas} onChange={(e) => setCampo('vagas', e.target.value)} />
-              <input placeholder="Área terreno m²" type="number" value={form.areaTerreno} onChange={(e) => setCampo('areaTerreno', e.target.value)} />
-              <input placeholder="Área constr. m²" type="number" value={form.areaConstruida} onChange={(e) => setCampo('areaConstruida', e.target.value)} />
+              {form.tipo === 'terreno' ? (
+                // Terreno só tem área do terreno — não faz sentido quartos, suítes, vagas ou área construída
+                <input placeholder="Área terreno m²" type="number" value={form.areaTerreno} onChange={(e) => setCampo('areaTerreno', e.target.value)} />
+              ) : form.tipo === 'apartamento' ? (
+                // Apartamento não tem área de terreno própria, só a área construída
+                <>
+                  <input placeholder="Quartos" type="number" value={form.quartos} onChange={(e) => setCampo('quartos', e.target.value)} />
+                  <input placeholder="Suítes" type="number" value={form.suites} onChange={(e) => setCampo('suites', e.target.value)} />
+                  <input placeholder="Vagas" type="number" value={form.vagas} onChange={(e) => setCampo('vagas', e.target.value)} />
+                  <input placeholder="Área constr. m²" type="number" value={form.areaConstruida} onChange={(e) => setCampo('areaConstruida', e.target.value)} />
+                </>
+              ) : (
+                // Casa, sala comercial etc. — todos os campos fazem sentido
+                <>
+                  <input placeholder="Quartos" type="number" value={form.quartos} onChange={(e) => setCampo('quartos', e.target.value)} />
+                  <input placeholder="Suítes" type="number" value={form.suites} onChange={(e) => setCampo('suites', e.target.value)} />
+                  <input placeholder="Vagas" type="number" value={form.vagas} onChange={(e) => setCampo('vagas', e.target.value)} />
+                  <input placeholder="Área terreno m²" type="number" value={form.areaTerreno} onChange={(e) => setCampo('areaTerreno', e.target.value)} />
+                  <input placeholder="Área constr. m²" type="number" value={form.areaConstruida} onChange={(e) => setCampo('areaConstruida', e.target.value)} />
+                </>
+              )}
             </div>
           </div>
 
