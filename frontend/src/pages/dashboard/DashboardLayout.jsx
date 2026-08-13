@@ -77,8 +77,8 @@ export default function DashboardLayout() {
         >
           <div style={{ marginBottom: 28, paddingLeft: 4, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
             <div>
-              <p style={{ fontWeight: 600, fontSize: 17, margin: 0, color: '#fff' }}>
-                Imobiliária<span style={{ color: 'var(--cor-primaria)' }}>.</span>
+              <p style={{ fontWeight: 600, fontSize: 17, margin: 0, color: 'var(--cor-primaria)' }}>
+                Zim<span style={{ color: '#fff' }}> Imóveis.</span>
               </p>
               <p style={{ fontSize: 12, color: 'var(--sidebar-texto)', margin: '2px 0 0' }}>Painel administrativo</p>
             </div>
