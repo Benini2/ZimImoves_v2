@@ -4,6 +4,13 @@ import { autenticar, permitir } from '../middleware/auth.js';
 
 const router = Router();
 
+// Campo opcional vazio (string vazia, undefined) vira NULL de verdade no banco,
+// em vez de virar 0 ou string vazia — importante pros números (quartos, área, etc.)
+// não darem a entender que o imóvel "tem 0 quartos" quando na real a informação nem se aplica.
+function ouNull(valor) {
+  return valor === '' || valor === undefined ? null : valor;
+}
+
 // Colunas seguras para expor na vitrine pública.
 // proprietario_nome, proprietario_contato e observacoes ficam de fora de propósito.
 const COLUNAS_PUBLICAS = `
@@ -189,9 +196,10 @@ router.post('/', permitir('master', 'corretor'), async (req, res) => {
        area_terreno, area_construida, descricao, foto_capa, comodidades, destaque,
        proprietario_nome, proprietario_contato, observacoes)
      VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,
-    [nome, preco, tipo, status, cidade, estado, bairro, quartos, suites, vagas,
-     areaTerreno, areaConstruida, descricao, fotoCapa, JSON.stringify(comodidades), destaque ? 1 : 0,
-     proprietarioNome, proprietarioContato, observacoes]
+    [nome, preco, tipo, status, ouNull(cidade), ouNull(estado), ouNull(bairro),
+     ouNull(quartos), ouNull(suites), ouNull(vagas), ouNull(areaTerreno), ouNull(areaConstruida),
+     ouNull(descricao), ouNull(fotoCapa), JSON.stringify(comodidades), destaque ? 1 : 0,
+     ouNull(proprietarioNome), ouNull(proprietarioContato), ouNull(observacoes)]
   );
 
   if (fotos.length > 0) {
@@ -217,9 +225,10 @@ router.put('/:id', permitir('master', 'corretor'), async (req, res) => {
       vagas=?, area_terreno=?, area_construida=?, descricao=?, foto_capa=?, comodidades=?, destaque=?,
       proprietario_nome=?, proprietario_contato=?, observacoes=?
      WHERE id=?`,
-    [nome, preco, tipo, status, cidade, estado, bairro, quartos, suites, vagas,
-     areaTerreno, areaConstruida, descricao, fotoCapa, JSON.stringify(comodidades), destaque ? 1 : 0,
-     proprietarioNome, proprietarioContato, observacoes,
+    [nome, preco, tipo, status, ouNull(cidade), ouNull(estado), ouNull(bairro),
+     ouNull(quartos), ouNull(suites), ouNull(vagas), ouNull(areaTerreno), ouNull(areaConstruida),
+     ouNull(descricao), ouNull(fotoCapa), JSON.stringify(comodidades), destaque ? 1 : 0,
+     ouNull(proprietarioNome), ouNull(proprietarioContato), ouNull(observacoes),
      req.params.id]
   );
 
