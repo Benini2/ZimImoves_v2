@@ -1,20 +1,41 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { useLocation, useNavigationType, useSearchParams } from 'react-router-dom';
 import { SlidersHorizontal, X, Building2 } from 'lucide-react';
 import api from '../../api';
 import ImovelCard from '../../components/ImovelCard';
 
-const VAZIO = { tipo: '', cidade: '', bairro: '', precoMin: '', precoMax: '' };
+const CAMPOS = ['tipo', 'cidade', 'bairro', 'precoMin', 'precoMax'];
 
 export default function Catalogo() {
+  const location = useLocation();
+  const tipoNavegacao = useNavigationType();
+  // Os filtros ficam no endereço (ex: /catalogo?tipo=terreno). Assim, quando a pessoa abre um
+  // imóvel e volta, o filtro continua selecionado.
+  const [searchParams, setSearchParams] = useSearchParams();
+  const filtros = Object.fromEntries(CAMPOS.map((campo) => [campo, searchParams.get(campo) || '']));
+
   const [imoveis, setImoveis] = useState([]);
   const [cidades, setCidades] = useState([]);
-  const [filtros, setFiltros] = useState(VAZIO);
   const [carregando, setCarregando] = useState(true);
+  const posicaoRestaurada = useRef(false);
+
+  // replace: true → mexer nos filtros não enche o histórico do navegador de entradas
+  function mudarFiltro(campo, valor) {
+    const novos = new URLSearchParams(searchParams);
+    if (valor === '') novos.delete(campo);
+    else novos.set(campo, valor);
+    setSearchParams(novos, { replace: true });
+  }
+
+  function limparFiltros() {
+    setSearchParams({}, { replace: true });
+  }
 
   useEffect(() => {
     api.get('/imoveis/publico/cidades').then(({ data }) => setCidades(data));
   }, []);
 
+  const chaveFiltros = searchParams.toString();
   useEffect(() => {
     setCarregando(true);
     const params = Object.fromEntries(Object.entries(filtros).filter(([, v]) => v !== ''));
@@ -22,9 +43,25 @@ export default function Catalogo() {
       setImoveis(data);
       setCarregando(false);
     });
-  }, [filtros]);
+  }, [chaveFiltros]);
 
-  const temFiltro = Object.values(filtros).some((v) => v !== '');
+  // Ao clicar num imóvel, guarda até onde a pessoa tinha rolado a lista
+  const chaveScroll = `catalogo:scroll:${location.pathname}${location.search}`;
+  function guardarPosicao() {
+    sessionStorage.setItem(chaveScroll, String(window.scrollY));
+  }
+
+  // Ao VOLTAR (botão voltar do navegador/celular) devolve a lista na mesma altura de antes.
+  // Só faz isso quando é "voltar" — entrando pelo menu do site, abre normalmente no topo.
+  useLayoutEffect(() => {
+    if (carregando || posicaoRestaurada.current) return;
+    posicaoRestaurada.current = true;
+    if (tipoNavegacao !== 'POP') return;
+    const salva = sessionStorage.getItem(chaveScroll);
+    if (salva) window.scrollTo(0, Number(salva));
+  }, [carregando]);
+
+  const temFiltro = CAMPOS.some((campo) => filtros[campo] !== '');
   const rotuloCampo = { fontSize: 12, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.04em', color: 'var(--texto-secundario)', display: 'block', marginBottom: 6 };
 
   return (
@@ -45,18 +82,18 @@ export default function Catalogo() {
           <div className="grid-filtros">
             <div>
               <label style={rotuloCampo}>Cidade</label>
-              <select style={{ width: '100%' }} value={filtros.cidade} onChange={(e) => setFiltros({ ...filtros, cidade: e.target.value })}>
+              <select style={{ width: '100%' }} value={filtros.cidade} onChange={(e) => mudarFiltro('cidade', e.target.value)}>
                 <option value="">Todas as cidades</option>
                 {cidades.map((c) => <option key={c} value={c}>{c}</option>)}
               </select>
             </div>
             <div>
               <label style={rotuloCampo}>Bairro</label>
-              <input style={{ width: '100%' }} placeholder="Todos os bairros" value={filtros.bairro} onChange={(e) => setFiltros({ ...filtros, bairro: e.target.value })} />
+              <input style={{ width: '100%' }} placeholder="Todos os bairros" value={filtros.bairro} onChange={(e) => mudarFiltro('bairro', e.target.value)} />
             </div>
             <div>
               <label style={rotuloCampo}>Tipo</label>
-              <select style={{ width: '100%' }} value={filtros.tipo} onChange={(e) => setFiltros({ ...filtros, tipo: e.target.value })}>
+              <select style={{ width: '100%' }} value={filtros.tipo} onChange={(e) => mudarFiltro('tipo', e.target.value)}>
                 <option value="">Todos os tipos</option>
                 <option value="apartamento">Apartamento</option>
                 <option value="casa">Casa</option>
@@ -67,8 +104,8 @@ export default function Catalogo() {
             <div>
               <label style={rotuloCampo}>Preço (mín. / máx.)</label>
               <div style={{ display: 'flex', gap: 6 }}>
-                <input type="number" placeholder="Mín." style={{ width: '50%' }} value={filtros.precoMin} onChange={(e) => setFiltros({ ...filtros, precoMin: e.target.value })} />
-                <input type="number" placeholder="Máx." style={{ width: '50%' }} value={filtros.precoMax} onChange={(e) => setFiltros({ ...filtros, precoMax: e.target.value })} />
+                <input type="number" placeholder="Mín." style={{ width: '50%' }} value={filtros.precoMin} onChange={(e) => mudarFiltro('precoMin', e.target.value)} />
+                <input type="number" placeholder="Máx." style={{ width: '50%' }} value={filtros.precoMax} onChange={(e) => mudarFiltro('precoMax', e.target.value)} />
               </div>
             </div>
           </div>
@@ -78,7 +115,7 @@ export default function Catalogo() {
               <strong style={{ color: 'var(--cor-primaria)' }}>{imoveis.length}</strong> {imoveis.length === 1 ? 'imóvel encontrado' : 'imóveis encontrados'}
             </p>
             {temFiltro && (
-              <button onClick={() => setFiltros(VAZIO)} className="btn-secundario" style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13 }}>
+              <button onClick={limparFiltros} className="btn-secundario" style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13 }}>
                 <X size={14} /> Limpar filtros
               </button>
             )}
@@ -94,7 +131,10 @@ export default function Catalogo() {
             <p style={{ fontSize: 13, color: 'var(--texto-secundario)', margin: 0 }}>Tente ajustar os filtros para ver mais opções.</p>
           </div>
         ) : (
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: 24, marginTop: 40 }}>
+          <div
+            onClickCapture={guardarPosicao}
+            style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: 24, marginTop: 40 }}
+          >
             {imoveis.map((imovel) => (
               <ImovelCard key={imovel.id} imovel={imovel} />
             ))}

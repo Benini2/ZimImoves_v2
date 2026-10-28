@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
 import RotaPrivada from './components/RotaPrivada';
 import RotaComPapel from './components/RotaComPapel';
+import RolarParaOTopo from './components/RolarParaOTopo';
 
 import Login from './pages/Login';
 
@@ -21,6 +22,7 @@ import Usuarios from './pages/dashboard/Usuarios';
 export default function App() {
   return (
     <BrowserRouter>
+      <RolarParaOTopo />
       <AuthProvider>
         <Routes>
           {/* Vitrine pública */}

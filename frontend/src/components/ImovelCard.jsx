@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { MapPin, BedDouble, Car, Square, ChevronRight, ImageOff } from 'lucide-react';
 import { ARQUIVOS_URL } from '../api';
 
@@ -15,13 +15,17 @@ function urlCapa(foto) {
 }
 
 export default function ImovelCard({ imovel, tag }) {
+  // Guarda em qual página a pessoa estava (ex: /catalogo?tipo=terreno) pra "voltar ao catálogo"
+  // devolver ela no mesmo filtro.
+  const location = useLocation();
+  const estado = { origem: location.pathname + location.search };
   const capa = urlCapa(imovel.foto_capa);
   const preco = Number(imovel.preco).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
   const localizacao = [imovel.bairro, imovel.cidade].filter(Boolean).join(', ');
 
   return (
     <article className="card-imovel">
-      <Link to={`/imovel/${imovel.id}`} className="card-imovel-foto">
+      <Link to={`/imovel/${imovel.id}`} state={estado} className="card-imovel-foto">
         {capa ? (
           <div className="imagem-fundo" style={{ background: `url(${capa}) center/cover` }} />
         ) : (
@@ -38,7 +42,7 @@ export default function ImovelCard({ imovel, tag }) {
 
       <div style={{ display: 'flex', flexDirection: 'column', flex: 1, padding: '1.1rem' }}>
         <h3 style={{ fontSize: 16, fontWeight: 700, margin: 0 }}>
-          <Link to={`/imovel/${imovel.id}`} style={{ color: 'var(--texto)' }}>{imovel.nome}</Link>
+          <Link to={`/imovel/${imovel.id}`} state={estado} style={{ color: 'var(--texto)' }}>{imovel.nome}</Link>
         </h3>
         <p style={{ display: 'flex', alignItems: 'center', gap: 5, fontSize: 13, color: 'var(--texto-secundario)', margin: '6px 0 0' }}>
           <MapPin size={13} />
@@ -59,7 +63,7 @@ export default function ImovelCard({ imovel, tag }) {
 
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderTop: '1px solid var(--borda)', marginTop: 18, paddingTop: 14 }}>
           <span style={{ fontSize: 18, fontWeight: 800, color: 'var(--cor-primaria)' }}>{preco}</span>
-          <Link to={`/imovel/${imovel.id}`} style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 13, fontWeight: 600, color: 'var(--texto)' }}>
+          <Link to={`/imovel/${imovel.id}`} state={estado} style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 13, fontWeight: 600, color: 'var(--texto)' }}>
             Detalhes <ChevronRight size={14} />
           </Link>
         </div>

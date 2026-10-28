@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Home as HomeIcon, ChevronRight, Building2 } from 'lucide-react';
+import { ChevronRight, Building2 } from 'lucide-react';
 import api, { ARQUIVOS_URL } from '../../api';
 import ImovelCard from '../../components/ImovelCard';
 
@@ -16,6 +16,9 @@ function ehVideo(url) {
 
 function Hero({ banners, indice, aoAvancar, config }) {
   const [linha1, linha2] = (config.hero_titulo || '').split('||');
+  const temTitulo = Boolean((linha1 || '').trim() || (linha2 || '').trim());
+  const temSubtitulo = Boolean((config.hero_subtitulo || '').trim());
+  const temTexto = temTitulo || temSubtitulo;
   const videoRefs = useRef([]);
 
   // Foto: troca sozinha depois de 5s. Vídeo: não usa temporizador, quem avança é o
@@ -72,25 +75,28 @@ function Hero({ banners, indice, aoAvancar, config }) {
         ) : (
           <div style={{ width: '100%', height: '100%', background: 'var(--fundo)' }} />
         )}
-        <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(90deg, rgba(255,255,255,0.92) 0%, rgba(255,255,255,0.55) 32%, rgba(255,255,255,0) 70%)' }} />
+        {temTexto && (
+          <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(90deg, rgba(255,255,255,0.92) 0%, rgba(255,255,255,0.55) 32%, rgba(255,255,255,0) 70%)' }} />
+        )}
       </div>
 
-      <div className="container" style={{ position: 'relative', minHeight: 480, display: 'flex', flexDirection: 'column', justifyContent: 'center', padding: '4rem 20px' }}>
+      <div className="container hero-conteudo">
         <div style={{ maxWidth: 560 }}>
-          <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8, borderRadius: 20, border: '1px solid var(--borda)', background: '#fff', padding: '7px 16px', fontSize: 12, fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.06em', color: 'var(--cor-primaria)' }}>
-            <HomeIcon size={14} /> CRECI 5581J
-          </span>
-          <h1 style={{ fontSize: 'clamp(30px, 4.5vw, 44px)', fontWeight: 800, lineHeight: 1.15, margin: '18px 0 0' }}>
-            {linha1}{linha2 ? <><br /><span style={{ color: 'var(--cor-primaria)' }}>{linha2}</span></> : null}
-          </h1>
-          <p style={{ fontSize: 16, color: 'black', lineHeight: 1.6, margin: '16px 0 0', maxWidth: 460 }}>
-            {config.hero_subtitulo}
-          </p>
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 12, marginTop: 28 }}>
-            <Link to="/catalogo" className="btn-primario" style={{ display: 'flex', alignItems: 'center', gap: 8, textDecoration: 'none', fontSize: 15, padding: '12px 24px' }}>
+          {temTitulo && (
+            <h1 style={{ fontSize: 'clamp(30px, 4.5vw, 44px)', fontWeight: 800, lineHeight: 1.15, margin: 0 }}>
+              {linha1}{linha2 ? <><br /><span style={{ color: 'var(--cor-primaria)' }}>{linha2}</span></> : null}
+            </h1>
+          )}
+          {temSubtitulo && (
+            <p style={{ fontSize: 16, color: 'var(--texto-secundario)', lineHeight: 1.6, margin: '16px 0 0', maxWidth: 460 }}>
+              {config.hero_subtitulo}
+            </p>
+          )}
+          <div className="hero-botoes" style={temTexto ? undefined : { marginTop: 0 }}>
+            <Link to="/catalogo" className="btn-primario">
               Ver catálogo <ChevronRight size={16} />
             </Link>
-            <Link to="/contatos" className="btn-secundario" style={{ display: 'flex', alignItems: 'center', textDecoration: 'none', fontSize: 15, padding: '12px 24px', background: '#fff' }}>
+            <Link to="/contatos" className="btn-secundario">
               Falar com corretor
             </Link>
           </div>

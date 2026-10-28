@@ -1,16 +1,7 @@
 import { useState } from 'react';
-import { Phone, Mail, MapPin, MessageCircle, Users, Instagram, Facebook } from 'lucide-react';
-
-
-const CONTATO = {
-  whatsapp: '554933534273',
-  telefoneExibido: '(49) 3353-4273',
-  email: 'zimimoveis@gmail.com',
-  endereco: 'Rua Rio Grande, 1282 — Centro, Xaxim - SC',
-
-  instagram: 'https://www.instagram.com/zimimoveis/',
-  facebook: 'https://www.facebook.com/zimimoveis?locale=pt_BR',
-};
+import { Phone, Mail, MapPin, MessageCircle, Instagram, Facebook } from 'lucide-react';
+import { CONTATO, CORRETORES, linkWhatsapp } from '../../config/contato';
+import IconeWhatsapp from '../../components/IconeWhatsapp';
 
 export default function Contato() {
   const [form, setForm] = useState({ nome: '', telefone: '', email: '', mensagem: '' });
@@ -18,18 +9,28 @@ export default function Contato() {
   function aoEnviar(e) {
     e.preventDefault();
     const texto = `Olá! Meu nome é ${form.nome}.\n${form.mensagem}\n\nContato: ${form.telefone || form.email}`;
-    window.open(`https://wa.me/${CONTATO.whatsapp}?text=${encodeURIComponent(texto)}`, '_blank');
+    window.open(linkWhatsapp(CONTATO.whatsapp, texto), '_blank');
+  }
+
+  // Corretor com número próprio abre direto a conversa dele; sem número ainda,
+  // abre a da imobiliária pedindo pra falar com aquela pessoa.
+  function linkDoCorretor(corretor) {
+    if (corretor.whatsapp) {
+      return linkWhatsapp(corretor.whatsapp, 'Olá! Vim pelo site da Zim Imóveis.');
+    }
+    return linkWhatsapp(CONTATO.whatsapp, `Olá! Vim pelo site da Zim Imóveis e gostaria de falar com ${corretor.nome}.`);
   }
 
   const campoStyle = { width: '100%' };
   const rotuloStyle = { fontSize: 13, fontWeight: 500, marginBottom: 6, display: 'block' };
+  const iconeSocial = { width: 44, height: 44, borderRadius: '50%', background: '#FBEAE7', color: 'var(--cor-primaria)', display: 'flex', alignItems: 'center', justifyContent: 'center' };
 
   return (
     <div style={{ background: 'var(--fundo)', borderTop: '1px solid var(--borda)' }}>
       <div className="container grid-duas-colunas" style={{ padding: '4rem 20px', gap: 48, alignItems: 'start' }}>
         <div>
-          <span className="badge-eyebrow">Contatos</span>
-          <h1 style={{ fontSize: 'clamp(26px, 4vw, 34px)', fontWeight: 800, margin: '8px 0 0' }}>Vamos encontrar seu novo endereço</h1>
+          {/* O título grande saiu a pedido do cliente; o "Contatos" pequeno continua sendo o h1 da página */}
+          <h1 className="badge-eyebrow" style={{ margin: 0 }}>Contatos</h1>
           <p style={{ fontSize: 15, color: 'var(--texto-secundario)', margin: '10px 0 0' }}>
             Entre em contato com um de nossos corretores. Atendimento rápido, personalizado e sem compromisso.
           </p>
@@ -41,35 +42,34 @@ export default function Contato() {
           </div>
 
           <div style={{ display: 'flex', gap: 12, marginTop: 24 }}>
-            <a
-              href={CONTATO.instagram}
-              target="_blank"
-              rel="noreferrer"
-              title="Instagram"
-              style={{ width: 44, height: 44, borderRadius: '50%', background: '#FBEAE7', color: 'var(--cor-primaria)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-            >
+            <a href={CONTATO.instagram} target="_blank" rel="noreferrer" title="Instagram" style={iconeSocial}>
               <Instagram size={19} />
             </a>
-            <a
-              href={CONTATO.facebook}
-              target="_blank"
-              rel="noreferrer"
-              title="Facebook"
-              style={{ width: 44, height: 44, borderRadius: '50%', background: '#FBEAE7', color: 'var(--cor-primaria)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-            >
+            <a href={CONTATO.facebook} target="_blank" rel="noreferrer" title="Facebook" style={iconeSocial}>
               <Facebook size={19} />
             </a>
           </div>
 
-          <a
-            href="https://linkme.bio/zimimoveis?utm_source=ig&utm_medium=social&utm_content=link_in_bio&fbclid=PAcGRvZgJleHRuA2FlbQIxMQBzcnRjBmFwcF9pZA85MzY2MTk3NDMzOTI0NTkAAacDj6qSpLwW7peqHPs3_lvznnw3-sA5l48YOvC4hcxiqoNBPez636os6CsOMA_aem_6xU9zVqQvQ1sPVMYpwURvw"
-            target="_blank"
-            rel="noreferrer"
-            className="btn-primario"
-            style={{ width: '70%', marginTop: 20, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, textDecoration: 'none' }}
-          >
-            <Users size={16} /> Fale com um dos nossos corretores
-          </a>
+          <div style={{ marginTop: 32 }}>
+            <p style={{ fontSize: 13, fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase', margin: '0 0 12px' }}>
+              Fale com um de nossos corretores
+            </p>
+            {/* Sempre 2 colunas, inclusive no celular (a classe grid-2 empilharia em 1 coluna) */}
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+              {CORRETORES.map((corretor) => (
+                <a
+                  key={corretor.nome}
+                  href={linkDoCorretor(corretor)}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="btn-primario"
+                  style={{ display: 'flex', alignItems: 'center', gap: 8, textDecoration: 'none', padding: '11px 12px', fontSize: 14, minWidth: 0 }}
+                >
+                  <IconeWhatsapp size={18} /> {corretor.nome}
+                </a>
+              ))}
+            </div>
+          </div>
         </div>
 
         <form onSubmit={aoEnviar} style={{ background: '#fff', border: '1px solid var(--borda)', borderRadius: 16, padding: '1.75rem', boxShadow: '0 1px 2px rgba(20,20,20,0.03)' }}>

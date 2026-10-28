@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import { Link, NavLink, Outlet } from 'react-router-dom';
 import { Menu, X } from 'lucide-react';
+import { CONTATO } from '../../config/contato';
+import '../../styles/vitrine.css';
 
 const LINKS = [
   { to: '/', label: 'Destaques', fim: true },
@@ -10,14 +12,8 @@ const LINKS = [
 
 function Logo() {
   return (
-    <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-      <img src="/images/logo-icone.svg" alt="" style={{ height: 42, borderRadius: 10 }} />
-      <div style={{ display: 'flex', flexDirection: 'column', lineHeight: 1.05 }}>
-        <span style={{ fontSize: 21, fontWeight: 800, color: 'var(--cor-texto)' }}>Zim</span>
-        <span style={{ fontSize: 11, fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'var(--cor-texto-secundario)' }}>
-          Imóveis
-        </span>
-      </div>
+    <Link to="/" style={{ display: 'flex', alignItems: 'center' }}>
+      <img src="/images/logo-completa.png" alt="Zim Imóveis" className="logo-header" />
     </Link>
   );
 }
@@ -78,17 +74,19 @@ export default function PublicLayout() {
       </main>
 
       <footer className="footer-publico">
-        <div className="container" style={{ padding: '2.5rem 20px', display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between', gap: 24 }}>
-          <Link to="/" style={{ display: 'flex', alignItems: 'center', gap: 9 }}>
-            <img src="/images/logo-icone.svg" alt="" style={{ height: 32, borderRadius: 10 }} />
-            <span style={{ fontSize: 17, fontWeight: 800, color: '#fff' }}>Zim Imóveis</span>
-          </Link>
-          <nav style={{ display: 'flex', gap: 20, fontSize: 13, flexWrap: 'wrap' }}>
+        <div className="container footer-conteudo">
+          <div className="footer-topo">
+            <Link to="/" style={{ display: 'flex', alignItems: 'center' }}>
+              <img src="/images/logo-completa-branca.png" alt="Zim Imóveis" className="footer-logo" />
+            </Link>
+            <span className="footer-creci">CRECI {CONTATO.creci}</span>
+          </div>
+          <nav className="footer-nav">
             {LINKS.map((l) => (
-              <Link key={l.to} to={l.to} style={{ color: 'rgba(255,255,255,0.75)' }}>{l.label}</Link>
+              <Link key={l.to} to={l.to}>{l.label}</Link>
             ))}
           </nav>
-          <p style={{ fontSize: 13, color: 'rgba(255,255,255,0.5)', margin: 0 }}>
+          <p className="footer-copy">
             © {new Date().getFullYear()} Zim Imóveis. Todos os direitos reservados.
           </p>
         </div>

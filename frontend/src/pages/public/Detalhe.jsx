@@ -1,15 +1,16 @@
 import { useEffect, useState } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
 import {
   ArrowLeft, MapPin, BedDouble, Bath, Square, Car, Building2,
   Check, Phone, MessageCircle, ChevronRight, ImageOff, Home as HomeIcon,
   X, ChevronLeft, Share2, Link as LinkIcon,
 } from 'lucide-react';
 import api, { ARQUIVOS_URL } from '../../api';
+import { CONTATO } from '../../config/contato';
 
 // TODO: trocar pelo telefone real da imobiliária
-const WHATSAPP = '554933534273';
-const TELEFONE_EXIBIDO = '(49) 3353-4273';
+const WHATSAPP = CONTATO.whatsapp;
+const TELEFONE_EXIBIDO = CONTATO.telefoneExibido;
 
 const TIPO_LABEL = {
   apartamento: 'Apartamento',
@@ -25,6 +26,17 @@ function urlCompleta(caminho) {
 
 export default function Detalhe() {
   const { id } = useParams();
+  const location = useLocation();
+  const navigate = useNavigate();
+  const origem = location.state?.origem;
+  const veioDoCatalogo = typeof origem === 'string' && origem.startsWith('/catalogo');
+  const destinoCatalogo = veioDoCatalogo ? origem : '/catalogo';
+  function voltarAoCatalogo(e) {
+    if (veioDoCatalogo) {
+      e.preventDefault();
+      navigate(-1);
+    }
+  }
   const [imovel, setImovel] = useState(null);
   const [erro, setErro] = useState(false);
   const [fotoAtiva, setFotoAtiva] = useState(0);
@@ -65,7 +77,7 @@ export default function Detalhe() {
         <HomeIcon size={40} color="var(--texto-secundario)" style={{ margin: '0 auto' }} />
         <h1 style={{ fontSize: 24, fontWeight: 700, margin: '20px 0 8px' }}>Imóvel não encontrado</h1>
         <p style={{ color: 'var(--texto-secundario)', margin: '0 0 24px' }}>Este imóvel pode ter sido vendido ou removido do catálogo.</p>
-        <Link to="/catalogo" className="btn-primario" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, textDecoration: 'none' }}>
+        <Link to={destinoCatalogo} onClick={voltarAoCatalogo} className="btn-primario" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, textDecoration: 'none' }}>
           <ArrowLeft size={16} /> Voltar ao catálogo
         </Link>
       </div>
@@ -95,7 +107,7 @@ export default function Detalhe() {
       <nav style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, color: 'var(--texto-secundario)', marginBottom: 24, flexWrap: 'wrap' }}>
         <Link to="/" style={{ color: 'var(--texto-secundario)' }}>Início</Link>
         <ChevronRight size={13} />
-        <Link to="/catalogo" style={{ color: 'var(--texto-secundario)' }}>Catálogo</Link>
+        <Link to={destinoCatalogo} onClick={voltarAoCatalogo} style={{ color: 'var(--texto-secundario)' }}>Catálogo</Link>
         <ChevronRight size={13} />
         <span style={{ color: 'var(--texto)', fontWeight: 500 }}>{imovel.nome}</span>
       </nav>
@@ -208,7 +220,7 @@ export default function Detalhe() {
             </div>
           </div>
 
-          <Link to="/catalogo" style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: 13, fontWeight: 600, color: 'var(--texto-secundario)', marginTop: 14 }}>
+          <Link to={destinoCatalogo} onClick={voltarAoCatalogo} style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: 13, fontWeight: 600, color: 'var(--texto-secundario)', marginTop: 14 }}>
             <ArrowLeft size={14} /> Voltar ao catálogo
           </Link>
         </aside>
